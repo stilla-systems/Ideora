@@ -1,0 +1,73 @@
+{
+  "headline": "Simple, Transparent Pricing",
+  "subheadline": "Daily content and live growth direction for every creator",
+  "plans": [
+    {
+      "name": "Starter",
+      "price": "$29",
+      "period": "/month",
+      "features": [
+        "Daily content & live direction",
+        "Limited platforms",
+        "What to post guides",
+        "Best time to go live",
+        "Email support"
+      ],
+      "tagline": "Perfect for emerging creators",
+      "cta": "Start Now",
+      "popular": false
+    },
+    {
+      "name": "Creator",
+      "price": "$59",
+      "period": "/month",
+      "features": [
+        "Full content & live growth direction",
+        "All platforms",
+        "Detailed hook strategies",
+        "Live streaming opportunities",
+        "Optimal timing insights",
+        "Priority support",
+        "Weekly direction summaries"
+      ],
+      "tagline": "Most popular for professional creators",
+      "cta": "Start Now",
+      "popular": true
+    },
+    {
+      "name": "Custom",
+      "price": "Contact",
+      "period": "us",
+      "features": [
+        "Everything in Creator",
+        "For teams, brands, and custom needs",
+        "Dedicated support",
+        "Custom integrations",
+        "White-label options",
+        "Team collaboration"
+      ],
+      "tagline": "For teams and brands",
+      "cta": "Contact Us",
+      "popular": false
+    }
+  ],
+  "faq": [
+    {
+      "question": "Can I switch plans anytime?",
+      "answer": "Yes. Upgrade or downgrade your plan at any time. Changes take effect on your next billing cycle."
+    },
+    {
+      "question": "What is content and live growth direction?",
+      "answer": "We provide daily recommendations on what to post, when to go live, hook strategies, and why it matters for your growth right now."
+    },
+    {
+      "question": "Do you offer annual billing discounts?",
+      "answer": "Yes. Contact our sales team for custom Enterprise pricing and annual billing options."
+    },
+    {
+      "question": "Is there a free trial?",
+      "answer": "Yes. Start with a 7-day free trial to explore content and live direction features—no credit card required."
+    }
+  ],
+  "subtext": "Billed in local currency at current exchange rate. All plans include daily content direction, live streaming opportunities, and email support."
+}

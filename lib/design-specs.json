@@ -1,0 +1,132 @@
+{
+  "features_bubbles": [
+    {
+      "id": "daily_trends",
+      "title": "Content Direction",
+      "tagline": "What to post",
+      "style": {
+        "background": "glassmorphism",
+        "hover_effect": "gradient shift to indigo",
+        "border_radius": "2xl",
+        "shadow": "subtle drop-shadow"
+      }
+    },
+    {
+      "id": "live_opportunities",
+      "title": "Live Opportunities",
+      "tagline": "When to go live",
+      "style": {
+        "background": "glassmorphism",
+        "hover_effect": "gradient shift to cyan",
+        "border_radius": "2xl",
+        "shadow": "subtle drop-shadow"
+      }
+    },
+    {
+      "id": "multi_platform",
+      "title": "Multi-Platform",
+      "tagline": "5+ networks",
+      "style": {
+        "background": "glassmorphism",
+        "hover_effect": "gradient shift to purple",
+        "border_radius": "2xl",
+        "shadow": "subtle drop-shadow"
+      }
+    },
+    {
+      "id": "niche_focused",
+      "title": "Niche Focused",
+      "tagline": "Your audience",
+      "style": {
+        "background": "glassmorphism",
+        "hover_effect": "gradient shift to pink",
+        "border_radius": "2xl",
+        "shadow": "subtle drop-shadow"
+      }
+    },
+    {
+      "id": "unified_dashboard",
+      "title": "Dashboard Access",
+      "tagline": "One interface",
+      "style": {
+        "background": "glassmorphism",
+        "hover_effect": "gradient shift to teal",
+        "border_radius": "2xl",
+        "shadow": "subtle drop-shadow"
+      }
+    }
+  ],
+  "branding": {
+    "logo": "/logo.png",
+    "favicon": "/favicon.ico",
+    "primary_color": "#6366f1",
+    "secondary_color": "#06b6d4",
+    "accent_color": "#a855f7",
+    "tertiary_color": "#ec4899",
+    "gradient_primary": "from-indigo-600 to-purple-600",
+    "gradient_secondary": "from-cyan-600 to-blue-600",
+    "gradient_hover": "from-indigo-500 via-purple-500 to-cyan-500"
+  },
+  "layout": {
+    "desktop": {
+      "grid_type": "flex with wrapping",
+      "max_columns": "5 columns",
+      "gap": "gap-4 md:gap-6 lg:gap-8",
+      "container": "max-w-6xl",
+      "arrangement": "center aligned with responsive wrapping"
+    },
+    "mobile": {
+      "grid_type": "grid responsive",
+      "max_columns": "2 columns",
+      "gap": "gap-3 md:gap-4",
+      "container": "full width with padding",
+      "arrangement": "2-column grid on mobile, 3 on tablet, 5 on desktop"
+    },
+    "bubble_sizing": {
+      "width_mobile": "w-24 h-24",
+      "width_tablet": "w-32 h-32",
+      "width_desktop": "w-40 h-40",
+      "aspect_ratio": "square 1:1",
+      "padding": "p-4 md:p-6",
+      "text_alignment": "center"
+    }
+  },
+  "interactions": {
+    "hover_effect": "scale 1.05 with shadow increase and gradient glow",
+    "transition": "all 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+    "active_state": "ring-2 ring-offset-2 with bubble color",
+    "focus_state": "outline-2 outline-offset-2 for accessibility",
+    "backdrop_blur": "blur(10px) saturate(180%)"
+  },
+  "typography": {
+    "title": "font-bold text-sm md:text-base lg:text-lg leading-tight",
+    "tagline": "text-xs md:text-sm text-foreground/60 mt-1 hidden md:block"
+  },
+  "color_mapping": {
+    "Content Direction": {
+      "bg": "from-indigo-500 to-indigo-600",
+      "hover": "from-indigo-400 to-indigo-500",
+      "glow": "from-indigo-600 to-indigo-700"
+    },
+    "Live Opportunities": {
+      "bg": "from-cyan-500 to-cyan-600",
+      "hover": "from-cyan-400 to-cyan-500",
+      "glow": "from-cyan-600 to-cyan-700"
+    },
+    "Multi-Platform": {
+      "bg": "from-purple-500 to-purple-600",
+      "hover": "from-purple-400 to-purple-500",
+      "glow": "from-purple-600 to-purple-700"
+    },
+    "Niche Focused": {
+      "bg": "from-pink-500 to-pink-600",
+      "hover": "from-pink-400 to-pink-500",
+      "glow": "from-pink-600 to-pink-700"
+    },
+    "Dashboard Access": {
+      "bg": "from-teal-500 to-teal-600",
+      "hover": "from-teal-400 to-teal-500",
+      "glow": "from-teal-600 to-teal-700"
+    }
+  }
+}
