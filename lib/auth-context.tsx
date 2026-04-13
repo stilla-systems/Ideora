@@ -2,10 +2,15 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from './supabase';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+}
 
 interface AuthContextType {
-  user: SupabaseUser | null;
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   logout: () => Promise<void>;
@@ -14,22 +19,42 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
     const checkSession = async () => {
       try {
         if (!supabase) {
-          setUser(null);
+          // Fallback: check sessionStorage for mock auth user
+          if (typeof window !== 'undefined') {
+            const storedUser = sessionStorage.getItem('stillatrends_user');
+            if (storedUser) {
+              const parsed = JSON.parse(storedUser);
+              setUser({ id: parsed.id, email: parsed.email, name: parsed.name || parsed.email });
+            }
+          }
           setIsLoading(false);
           return;
         }
+
         const { data: { user: currentUser } } = await supabase.auth.getUser();
-        setUser(currentUser || null);
+        if (currentUser) {
+          setUser({
+            id: currentUser.id,
+            email: currentUser.email || '',
+            name: (
+              currentUser.user_metadata?.full_name ||
+              currentUser.user_metadata?.name ||
+              currentUser.email ||
+              'User'
+            ),
+          });
+        } else {
+          setUser(null);
+        }
       } catch (error) {
-        console.log('[v0] Error checking session:', error);
+        console.log('[Auth] Error checking session:', error);
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -38,15 +63,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     checkSession();
 
-    // Listen for auth changes only if supabase is available
-    if (!supabase) {
-      setIsLoading(false);
-      return;
-    }
+    if (!supabase) return;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (_event: any, session: any) => {
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            name: (
+              session.user.user_metadata?.full_name ||
+              session.user.user_metadata?.name ||
+              session.user.email ||
+              'User'
+            ),
+          });
+        } else {
+          setUser(null);
+        }
       }
     );
 
@@ -59,10 +94,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       if (supabase) {
         await supabase.auth.signOut();
+      } else if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('stillatrends_user');
+        sessionStorage.removeItem('stillatrends_session');
       }
       setUser(null);
     } catch (error) {
-      console.log('[v0] Error logging out:', error);
+      console.log('[Auth] Error logging out:', error);
+      setUser(null);
     }
   };
 

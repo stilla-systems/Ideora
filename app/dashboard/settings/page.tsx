@@ -35,10 +35,11 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (user) {
-      setFormData({
+      setFormData((prev) => ({
+        ...prev,
         name: user.name,
         email: user.email,
-      });
+      }));
       const userPrefs = getUserPreferences(user.id);
       setPreferences(userPrefs);
     }

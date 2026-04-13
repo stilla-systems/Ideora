@@ -6,6 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, AlertCircle, Zap, Target } from 'lucide-react';
 
+const PLATFORM_SIGNALS = [
+  { platform: 'TikTok', score: 88 },
+  { platform: 'YouTube', score: 74 },
+  { platform: 'X', score: 61 },
+  { platform: 'Threads', score: 52 },
+  { platform: 'Instagram', score: 79 },
+];
+
 // Main Command Center Panel Component
 export function GrowthCommandCenter() {
   return (
@@ -161,18 +169,18 @@ export function GrowthCommandCenter() {
         <Card className="border border-gray-800 bg-slate-900 p-6">
           <h3 className="text-xs font-mono text-gray-400 tracking-widest mb-4">PLATFORM SIGNALS</h3>
           <div className="space-y-3">
-            {['TikTok', 'YouTube', 'X', 'Threads', 'Instagram'].map((platform) => (
+            {PLATFORM_SIGNALS.map(({ platform, score }) => (
               <div key={platform} className="flex items-center justify-between p-2 bg-slate-800 rounded">
                 <span className="text-sm font-mono text-gray-300">{platform}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-12 h-1 bg-gray-700 rounded">
                     <div
                       className="h-1 bg-cyan-500 rounded"
-                      style={{ width: `${Math.random() * 100}%` }}
+                      style={{ width: `${score}%` }}
                     ></div>
                   </div>
                   <span className="text-xs text-gray-500 font-mono w-8 text-right">
-                    {Math.floor(Math.random() * 100)}%
+                    {score}%
                   </span>
                 </div>
               </div>
