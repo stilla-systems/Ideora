@@ -2,6 +2,7 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Providers } from '@/components/providers'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -39,6 +40,7 @@ export default function RootLayout({
       </head>
       <body className={`${_geist.className} font-sans antialiased transition-colors duration-300`}>
         <Providers>{children}</Providers>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   )

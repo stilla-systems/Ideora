@@ -2,7 +2,9 @@
 
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Card } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Users, Eye, Heart, Share2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { TrendingUp, TrendingDown, Users, Eye, Heart, Share2, Download } from 'lucide-react';
+import { toast } from 'sonner';
 
 const WEEKLY_DATA = [
   { day: 'Mon', views: 12400, engagement: 8.2, followers: 34 },
@@ -17,38 +19,10 @@ const WEEKLY_DATA = [
 const maxViews = Math.max(...WEEKLY_DATA.map((d) => d.views));
 
 const STATS = [
-  {
-    label: 'Total Views',
-    value: '115.6K',
-    change: '+18.4%',
-    up: true,
-    icon: Eye,
-    color: 'text-cyan-400',
-  },
-  {
-    label: 'Avg. Engagement',
-    value: '10.4%',
-    change: '+2.1%',
-    up: true,
-    icon: Heart,
-    color: 'text-pink-400',
-  },
-  {
-    label: 'New Followers',
-    value: '+354',
-    change: '+12.6%',
-    up: true,
-    icon: Users,
-    color: 'text-violet-400',
-  },
-  {
-    label: 'Shares',
-    value: '2,840',
-    change: '-3.2%',
-    up: false,
-    icon: Share2,
-    color: 'text-yellow-400',
-  },
+  { label: 'Total Views', value: '115.6K', change: '+18.4%', up: true, icon: Eye, color: 'text-cyan-400' },
+  { label: 'Avg. Engagement', value: '10.4%', change: '+2.1%', up: true, icon: Heart, color: 'text-pink-400' },
+  { label: 'New Followers', value: '+354', change: '+12.6%', up: true, icon: Users, color: 'text-violet-400' },
+  { label: 'Shares', value: '2,840', change: '-3.2%', up: false, icon: Share2, color: 'text-yellow-400' },
 ];
 
 const TOP_CONTENT = [
@@ -59,6 +33,25 @@ const TOP_CONTENT = [
   { title: '#DeInfluencing Take', platform: 'TikTok', views: '13.3K', engagement: '7.9%' },
 ];
 
+function downloadCSV() {
+  const rows = [
+    ['Day', 'Views', 'Engagement Rate (%)', 'New Followers'],
+    ...WEEKLY_DATA.map((d) => [d.day, d.views, d.engagement, d.followers]),
+    [],
+    ['Top Content', 'Platform', 'Views', 'Engagement Rate'],
+    ...TOP_CONTENT.map((c) => [c.title, c.platform, c.views, c.engagement]),
+  ];
+  const csv = rows.map((r) => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ideora-analytics-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast.success('Analytics exported', { description: 'CSV downloaded to your device' });
+}
+
 export default function AnalyticsPage() {
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -66,9 +59,19 @@ export default function AnalyticsPage() {
       <main className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8 space-y-6">
           {/* Header */}
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Analytics</h1>
-            <p className="mt-1 text-foreground/60 text-sm">Performance overview for the last 7 days</p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold">Analytics</h1>
+              <p className="mt-1 text-foreground/60 text-sm">Performance overview for the last 7 days</p>
+            </div>
+            <Button
+              variant="outline"
+              className="border-white/10 hover:border-white/20 gap-2 w-fit"
+              onClick={downloadCSV}
+            >
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Button>
           </div>
 
           {/* Stats Row */}
@@ -84,11 +87,7 @@ export default function AnalyticsPage() {
                         stat.up ? 'text-green-400' : 'text-red-400'
                       }`}
                     >
-                      {stat.up ? (
-                        <TrendingUp className="h-3 w-3" />
-                      ) : (
-                        <TrendingDown className="h-3 w-3" />
-                      )}
+                      {stat.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                       {stat.change}
                     </span>
                   </div>

@@ -35,7 +35,7 @@ export default function PrivacyPage() {
             <div>
               <h2 className="text-2xl font-bold mb-3">1. Introduction</h2>
               <p className="text-foreground/80 leading-relaxed">
-                StillaTrends ("we", "us", "our", or "Company") operates the StillaTrends website. This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our service and the choices you have associated with that data.
+                Ideora ("we", "us", "our", or "Company") operates the Ideora website. This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our service and the choices you have associated with that data.
               </p>
             </div>
 
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
             <div>
               <h2 className="text-2xl font-bold mb-3">3. Use of Data</h2>
               <p className="text-foreground/80 leading-relaxed">
-                StillaTrends uses the collected data for various purposes:
+                Ideora uses the collected data for various purposes:
               </p>
               <ul className="list-disc list-inside mt-3 space-y-2 text-foreground/80">
                 <li>To provide and maintain our service</li>

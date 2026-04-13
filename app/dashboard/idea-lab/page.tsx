@@ -1,76 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Zap, TrendingUp, RefreshCw, Copy, CheckCheck } from 'lucide-react';
+import { Zap, TrendingUp, RefreshCw, Copy, CheckCheck, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 const IDEA_CATEGORIES = ['All', 'Educational', 'Entertainment', 'Trending', 'Personal'];
 
-const IDEAS = [
-  {
-    id: '1',
-    title: 'AI Fails Compilation: When ChatGPT Gets It Wrong',
-    category: 'Entertainment',
-    score: 94,
-    platform: 'TikTok & YouTube',
-    hook: '"I asked AI to help me code and it literally crashed my computer"',
-    predictedViews: '1.2M–2.8M',
-    trend: 'Hot',
-  },
-  {
-    id: '2',
-    title: '5 Productivity Hacks That Saved Me 3 Hours Daily',
-    category: 'Educational',
-    score: 88,
-    platform: 'YouTube & Threads',
-    hook: '"I wasted years doing it the hard way — here\'s what changed everything"',
-    predictedViews: '800K–1.5M',
-    trend: 'Rising',
-  },
-  {
-    id: '3',
-    title: 'Day in My Life as a 6-Figure Creator',
-    category: 'Personal',
-    score: 83,
-    platform: 'TikTok & Instagram',
-    hook: '"Nobody shows you the boring parts of being a full-time creator"',
-    predictedViews: '600K–1.1M',
-    trend: 'Steady',
-  },
-  {
-    id: '4',
-    title: 'React vs Next.js in 60 Seconds',
-    category: 'Educational',
-    score: 79,
-    platform: 'YouTube Shorts & X',
-    hook: '"You\'ve been choosing the wrong framework — here\'s why"',
-    predictedViews: '400K–900K',
-    trend: 'Rising',
-  },
-  {
-    id: '5',
-    title: 'Trending Sound Challenge: [Current Viral Audio]',
-    category: 'Trending',
-    score: 91,
-    platform: 'TikTok & Instagram Reels',
-    hook: 'Lead with the trending sound, cut to your niche twist',
-    predictedViews: '900K–2.1M',
-    trend: 'Hot',
-  },
-  {
-    id: '6',
-    title: 'What I Wish I Knew Before Starting on TikTok',
-    category: 'Personal',
-    score: 76,
-    platform: 'TikTok & YouTube',
-    hook: '"3 years and 200K followers later — here\'s what actually works"',
-    predictedViews: '350K–700K',
-    trend: 'Steady',
-  },
-];
+interface Idea {
+  id: string;
+  title: string;
+  category: string;
+  score: number;
+  platform: string;
+  hook: string;
+  body?: string;
+  cta?: string;
+  predictedViews: string;
+  trend: string;
+  tags?: string[];
+}
 
 const TREND_COLORS: Record<string, string> = {
   Hot: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -78,22 +30,127 @@ const TREND_COLORS: Record<string, string> = {
   Steady: 'bg-green-500/20 text-green-400 border-green-500/30',
 };
 
+function BlueprintModal({ idea, onClose }: { idea: Idea; onClose: () => void }) {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const copySection = (label: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(label);
+    setTimeout(() => setCopied(null), 2000);
+    toast.success('Copied!', { description: `${label} copied to clipboard` });
+  };
+
+  const copyAll = () => {
+    const full = `TITLE: ${idea.title}\n\nHOOK (0–3s):\n${idea.hook}\n\nBODY (3–25s):\n${idea.body || 'Show value, keep it fast-paced, no fluff'}\n\nCTA (25–30s):\n${idea.cta || 'Engage with a direct question or challenge'}`;
+    navigator.clipboard.writeText(full);
+    toast.success('Full blueprint copied!');
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="w-full max-w-lg bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl">
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <h2 className="font-bold text-lg leading-snug">{idea.title}</h2>
+            <p className="text-xs text-foreground/40 mt-1">{idea.platform}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-white/10 text-foreground/50 hover:text-foreground transition-colors shrink-0 ml-3"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {[
+            { label: 'HOOK (0–3s)', content: idea.hook, color: 'border-cyan-500/30 bg-cyan-500/5' },
+            {
+              label: 'BODY (3–25s)',
+              content: idea.body || 'Show value clearly, keep the pace fast, use visuals. Cut anything that doesn\'t add energy.',
+              color: 'border-violet-500/30 bg-violet-500/5',
+            },
+            {
+              label: 'CTA (25–30s)',
+              content: idea.cta || 'End with a direct question or challenge to drive comments.',
+              color: 'border-pink-500/30 bg-pink-500/5',
+            },
+          ].map(({ label, content, color }) => (
+            <div key={label} className={`rounded-xl border p-4 ${color}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono font-bold text-foreground/50">{label}</span>
+                <button
+                  onClick={() => copySection(label, content)}
+                  className="text-[10px] text-foreground/40 hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  {copied === label ? <CheckCheck className="h-3 w-3 text-green-400" /> : <Copy className="h-3 w-3" />}
+                  {copied === label ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+              <p className="text-sm text-foreground/80 italic leading-relaxed">{content}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-3 mt-5 pt-4 border-t border-white/10">
+          <Button className="flex-1 bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-sm" onClick={copyAll}>
+            <Copy className="h-4 w-4 mr-2" />
+            Copy Full Blueprint
+          </Button>
+          <Button variant="outline" className="border-white/10 text-sm" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function IdeaLabPage() {
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [activeModal, setActiveModal] = useState<Idea | null>(null);
 
-  const filtered =
-    activeCategory === 'All' ? IDEAS : IDEAS.filter((i) => i.category === activeCategory);
+  const fetchIdeas = useCallback(async (showToast = false) => {
+    setLoading(true);
+    try {
+      const url = activeCategory !== 'All'
+        ? `/api/ideas?category=${encodeURIComponent(activeCategory)}`
+        : '/api/ideas';
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        setIdeas(data.ideas);
+        if (showToast) toast.success('Ideas refreshed', { description: `${data.ideas.length} new ideas loaded` });
+      }
+    } catch {
+      toast.error('Failed to load ideas');
+    } finally {
+      setLoading(false);
+    }
+  }, [activeCategory]);
 
-  const handleCopy = (idea: (typeof IDEAS)[0]) => {
+  useEffect(() => {
+    fetchIdeas();
+  }, [fetchIdeas]);
+
+  const handleCopy = (idea: Idea) => {
     navigator.clipboard.writeText(`${idea.title}\nHook: ${idea.hook}`);
     setCopiedId(idea.id);
     setTimeout(() => setCopiedId(null), 2000);
+    toast.success('Copied to clipboard');
   };
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar />
+      {activeModal && <BlueprintModal idea={activeModal} onClose={() => setActiveModal(null)} />}
+
       <main className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8 space-y-6">
           {/* Header */}
@@ -102,9 +159,13 @@ export default function IdeaLabPage() {
               <h1 className="text-2xl sm:text-3xl font-bold">Idea Lab</h1>
               <p className="mt-1 text-foreground/60 text-sm">AI-generated content ideas ranked by potential</p>
             </div>
-            <Button className="bg-gradient-to-r from-violet-600 to-cyan-600 hover:shadow-lg w-fit gap-2">
-              <RefreshCw className="h-4 w-4" />
-              Refresh Ideas
+            <Button
+              className="bg-gradient-to-r from-violet-600 to-cyan-600 hover:shadow-lg w-fit gap-2"
+              onClick={() => fetchIdeas(true)}
+              disabled={loading}
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              {loading ? 'Loading…' : 'Refresh Ideas'}
             </Button>
           </div>
 
@@ -126,93 +187,108 @@ export default function IdeaLabPage() {
           </div>
 
           {/* Ideas Grid */}
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((idea) => (
-              <Card
-                key={idea.id}
-                className="border border-white/10 bg-card p-5 flex flex-col gap-3 hover:border-violet-500/30 transition-all"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-sm leading-snug">{idea.title}</h3>
-                    <p className="text-xs text-foreground/50 mt-1">{idea.platform}</p>
+          {loading ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-64 rounded-xl bg-white/5 border border-white/5 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {ideas.map((idea) => (
+                <Card
+                  key={idea.id}
+                  className="border border-white/10 bg-card p-5 flex flex-col gap-3 hover:border-violet-500/30 transition-all"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-sm leading-snug">{idea.title}</h3>
+                      <p className="text-xs text-foreground/50 mt-1">{idea.platform}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-2xl font-bold text-cyan-400">{idea.score}</div>
+                      <p className="text-[10px] text-foreground/40 font-mono">SCORE</p>
+                    </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-2xl font-bold text-cyan-400">{idea.score}</div>
-                    <p className="text-[10px] text-foreground/40 font-mono">SCORE</p>
-                  </div>
-                </div>
 
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline" className="text-[10px] border-white/10 text-foreground/60">
-                    {idea.category}
-                  </Badge>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${TREND_COLORS[idea.trend]}`}>
-                    {idea.trend}
-                  </span>
-                </div>
-
-                <div className="bg-white/5 rounded-lg p-3 border border-white/10">
-                  <p className="text-[10px] font-mono text-foreground/40 mb-1">HOOK</p>
-                  <p className="text-xs text-foreground/80 italic">{idea.hook}</p>
-                </div>
-
-                <div className="flex items-center justify-between pt-1">
-                  <div>
-                    <p className="text-[10px] text-foreground/40">Predicted Views</p>
-                    <p className="text-xs font-semibold text-green-400">{idea.predictedViews}</p>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="outline" className="text-[10px] border-white/10 text-foreground/60">
+                      {idea.category}
+                    </Badge>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${TREND_COLORS[idea.trend] || TREND_COLORS.Steady}`}>
+                      {idea.trend}
+                    </span>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 text-xs gap-1.5 text-foreground/60 hover:text-foreground"
-                      onClick={() => handleCopy(idea)}
-                    >
-                      {copiedId === idea.id ? (
-                        <CheckCheck className="h-3.5 w-3.5 text-green-400" />
-                      ) : (
-                        <Copy className="h-3.5 w-3.5" />
-                      )}
-                      {copiedId === idea.id ? 'Copied' : 'Copy'}
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="h-8 text-xs gap-1.5 bg-violet-600/20 text-violet-400 hover:bg-violet-600/30 border border-violet-500/30"
-                    >
-                      <Zap className="h-3.5 w-3.5" />
-                      Use
-                    </Button>
+
+                  <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                    <p className="text-[10px] font-mono text-foreground/40 mb-1">HOOK</p>
+                    <p className="text-xs text-foreground/80 italic line-clamp-2">{idea.hook}</p>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+
+                  <div className="flex items-center justify-between pt-1">
+                    <div>
+                      <p className="text-[10px] text-foreground/40">Predicted Views</p>
+                      <p className="text-xs font-semibold text-green-400">{idea.predictedViews}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 text-xs gap-1.5 text-foreground/60 hover:text-foreground"
+                        onClick={() => handleCopy(idea)}
+                      >
+                        {copiedId === idea.id ? (
+                          <CheckCheck className="h-3.5 w-3.5 text-green-400" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                        {copiedId === idea.id ? 'Copied' : 'Copy'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="h-8 text-xs gap-1.5 bg-violet-600/20 text-violet-400 hover:bg-violet-600/30 border border-violet-500/30"
+                        onClick={() => setActiveModal(idea)}
+                      >
+                        <Zap className="h-3.5 w-3.5" />
+                        Use
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
 
           {/* Stats Footer */}
-          <Card className="border border-white/10 bg-card p-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-violet-400">6</div>
-                <p className="text-xs text-foreground/50">Ideas Generated</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-cyan-400">87</div>
-                <p className="text-xs text-foreground/50">Avg. Score</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-pink-400">5</div>
-                <p className="text-xs text-foreground/50">Platforms Covered</p>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-400 flex items-center justify-center gap-1">
-                  <TrendingUp className="h-5 w-5" />
-                  2
+          {!loading && ideas.length > 0 && (
+            <Card className="border border-white/10 bg-card p-5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-violet-400">{ideas.length}</div>
+                  <p className="text-xs text-foreground/50">Ideas Available</p>
                 </div>
-                <p className="text-xs text-foreground/50">Hot Trends</p>
+                <div>
+                  <div className="text-2xl font-bold text-cyan-400">
+                    {Math.round(ideas.reduce((a, b) => a + b.score, 0) / ideas.length)}
+                  </div>
+                  <p className="text-xs text-foreground/50">Avg. Score</p>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-pink-400">
+                    {new Set(ideas.flatMap((i) => i.platform.split(' & '))).size}
+                  </div>
+                  <p className="text-xs text-foreground/50">Platforms</p>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-green-400 flex items-center justify-center gap-1">
+                    <TrendingUp className="h-5 w-5" />
+                    {ideas.filter((i) => i.trend === 'Hot').length}
+                  </div>
+                  <p className="text-xs text-foreground/50">Hot Trends</p>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          )}
         </div>
       </main>
     </div>

@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, Zap, TrendingUp, Bell, BellOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { AlertCircle, Zap, TrendingUp, Bell, BellOff, X, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
 
 type AlertType = 'urgent' | 'opportunity' | 'signal';
 
@@ -16,6 +18,8 @@ interface Alert {
   platform: string;
   timeAgo: string;
   actionable: boolean;
+  actionSteps?: string[];
+  actionLink?: string;
 }
 
 const ALERTS: Alert[] = [
@@ -27,6 +31,12 @@ const ALERTS: Alert[] = [
     platform: 'TikTok',
     timeAgo: '12 min ago',
     actionable: true,
+    actionSteps: [
+      'Trim your next video to under 45 seconds',
+      'Add auto-captions or manual subtitles',
+      'Use trending sounds from the TikTok Creator Marketplace',
+      'Post within the next 2 hours for peak window',
+    ],
   },
   {
     id: '2',
@@ -36,6 +46,12 @@ const ALERTS: Alert[] = [
     platform: 'YouTube',
     timeAgo: '28 min ago',
     actionable: true,
+    actionSteps: [
+      'Create a 60-second Shorts compilation of AI blunders',
+      'Use #AIFails #AIFunny #ChatGPT in description',
+      'Post between 6–8 PM for maximum impressions',
+      'Include a "comment your AI fail" CTA at 55s',
+    ],
   },
   {
     id: '3',
@@ -54,6 +70,12 @@ const ALERTS: Alert[] = [
     platform: 'TikTok & YouTube',
     timeAgo: '2 hr ago',
     actionable: true,
+    actionSteps: [
+      'Post 2 educational Shorts over the next 3 days',
+      'Use their audience\'s top keywords in your captions',
+      'Respond to comments on recent competitor posts to gain visibility',
+      'Mirror their best-performing content format (add your own angle)',
+    ],
   },
   {
     id: '5',
@@ -72,6 +94,12 @@ const ALERTS: Alert[] = [
     platform: 'Instagram & TikTok',
     timeAgo: '5 hr ago',
     actionable: true,
+    actionSteps: [
+      'Open TikTok Creator → search "Espresso" → use trending version',
+      'Record a 15–30s clip that fits your niche',
+      'Use a text hook in the first frame',
+      'Post in the next 12 hours — window closes after that',
+    ],
   },
 ];
 
@@ -79,38 +107,99 @@ const ALERT_CONFIG: Record<
   AlertType,
   { bg: string; border: string; icon: typeof AlertCircle; label: string; labelColor: string }
 > = {
-  urgent: {
-    bg: 'bg-red-500/10',
-    border: 'border-red-500/30',
-    icon: AlertCircle,
-    label: 'URGENT',
-    labelColor: 'text-red-400',
-  },
-  opportunity: {
-    bg: 'bg-yellow-500/10',
-    border: 'border-yellow-500/30',
-    icon: Zap,
-    label: 'OPPORTUNITY',
-    labelColor: 'text-yellow-400',
-  },
-  signal: {
-    bg: 'bg-green-500/10',
-    border: 'border-green-500/30',
-    icon: TrendingUp,
-    label: 'SIGNAL',
-    labelColor: 'text-green-400',
-  },
+  urgent: { bg: 'bg-red-500/10', border: 'border-red-500/30', icon: AlertCircle, label: 'URGENT', labelColor: 'text-red-400' },
+  opportunity: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', icon: Zap, label: 'OPPORTUNITY', labelColor: 'text-yellow-400' },
+  signal: { bg: 'bg-green-500/10', border: 'border-green-500/30', icon: TrendingUp, label: 'SIGNAL', labelColor: 'text-green-400' },
 };
+
+function ActionModal({ alert, onClose }: { alert: Alert; onClose: () => void }) {
+  const cfg = ALERT_CONFIG[alert.type];
+  const Icon = cfg.icon;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="w-full max-w-md bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Icon className={`h-5 w-5 ${cfg.labelColor}`} />
+            <span className={`text-xs font-mono font-bold ${cfg.labelColor}`}>{cfg.label}</span>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-foreground/50">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <h3 className="font-bold mb-2">{alert.title}</h3>
+        <p className="text-sm text-foreground/60 mb-5">{alert.body}</p>
+
+        {alert.actionSteps && (
+          <div className="space-y-2 mb-5">
+            <p className="text-xs font-semibold text-foreground/50 uppercase tracking-wider">Action Steps</p>
+            {alert.actionSteps.map((step, i) => (
+              <div key={i} className="flex gap-3 text-sm">
+                <span className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-[10px] text-foreground/50 shrink-0 mt-0.5">
+                  {i + 1}
+                </span>
+                <span className="text-foreground/80">{step}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex gap-3 pt-4 border-t border-white/10">
+          <Button
+            className={`flex-1 text-sm ${
+              alert.type === 'urgent'
+                ? 'bg-red-600 hover:bg-red-700'
+                : alert.type === 'opportunity'
+                ? 'bg-yellow-600 hover:bg-yellow-700'
+                : 'bg-green-600 hover:bg-green-700'
+            } text-white`}
+            onClick={() => {
+              toast.success('Action logged', { description: 'This opportunity has been saved to your action list.' });
+              onClose();
+            }}
+          >
+            Mark as Actioned
+          </Button>
+          <Button variant="outline" className="border-white/10 text-sm" onClick={onClose}>
+            Dismiss
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LiveEnginePage() {
   const [filter, setFilter] = useState<AlertType | 'all'>('all');
   const [notificationsOn, setNotificationsOn] = useState(true);
+  const [activeModal, setActiveModal] = useState<Alert | null>(null);
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
 
-  const filtered = filter === 'all' ? ALERTS : ALERTS.filter((a) => a.type === filter);
+  const filtered = (filter === 'all' ? ALERTS : ALERTS.filter((a) => a.type === filter))
+    .filter((a) => !dismissed.has(a.id));
+
+  const handleDismiss = (id: string) => {
+    setDismissed((prev) => new Set([...prev, id]));
+    toast.success('Alert dismissed');
+  };
+
+  const toggleNotifications = () => {
+    const next = !notificationsOn;
+    setNotificationsOn(next);
+    toast.success(next ? 'Notifications enabled' : 'Notifications paused', {
+      description: next ? 'You\'ll be alerted of new opportunities.' : 'No new alerts until you re-enable.',
+    });
+  };
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       <Sidebar />
+      {activeModal && <ActionModal alert={activeModal} onClose={() => setActiveModal(null)} />}
+
       <main className="flex-1 overflow-auto">
         <div className="p-4 sm:p-6 lg:p-8 space-y-6">
           {/* Header */}
@@ -126,7 +215,7 @@ export default function LiveEnginePage() {
               <p className="mt-1 text-foreground/60 text-sm">Real-time alerts and growth opportunities</p>
             </div>
             <button
-              onClick={() => setNotificationsOn(!notificationsOn)}
+              onClick={toggleNotifications}
               className="flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-sm transition-all w-fit"
             >
               {notificationsOn ? (
@@ -144,9 +233,9 @@ export default function LiveEnginePage() {
           <div className="grid grid-cols-3 gap-3">
             {(
               [
-                { type: 'urgent', label: 'Urgent', count: 2, color: 'text-red-400' },
-                { type: 'opportunity', label: 'Opportunities', count: 2, color: 'text-yellow-400' },
-                { type: 'signal', label: 'Signals', count: 2, color: 'text-green-400' },
+                { type: 'urgent', label: 'Urgent', count: ALERTS.filter(a => a.type === 'urgent').length, color: 'text-red-400' },
+                { type: 'opportunity', label: 'Opportunities', count: ALERTS.filter(a => a.type === 'opportunity').length, color: 'text-yellow-400' },
+                { type: 'signal', label: 'Signals', count: ALERTS.filter(a => a.type === 'signal').length, color: 'text-green-400' },
               ] as const
             ).map(({ type, label, count, color }) => (
               <Card
@@ -180,43 +269,53 @@ export default function LiveEnginePage() {
           </div>
 
           {/* Alerts List */}
-          <div className="space-y-3">
-            {filtered.map((alert) => {
-              const cfg = ALERT_CONFIG[alert.type];
-              const Icon = cfg.icon;
-              return (
-                <Card
-                  key={alert.id}
-                  className={`border p-4 sm:p-5 ${cfg.bg} ${cfg.border} transition-all`}
-                >
-                  <div className="flex gap-3">
-                    <Icon className={`h-5 w-5 shrink-0 mt-0.5 ${cfg.labelColor}`} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span className={`text-[10px] font-mono font-bold ${cfg.labelColor}`}>
-                          {cfg.label}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] border-white/10 text-foreground/50"
-                        >
-                          {alert.platform}
-                        </Badge>
-                        <span className="text-[10px] text-foreground/30 ml-auto">{alert.timeAgo}</span>
+          {filtered.length === 0 ? (
+            <Card className="border border-white/10 bg-card p-8 text-center">
+              <p className="text-foreground/50 text-sm">No alerts in this category. Check back soon.</p>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {filtered.map((alert) => {
+                const cfg = ALERT_CONFIG[alert.type];
+                const Icon = cfg.icon;
+                return (
+                  <Card key={alert.id} className={`border p-4 sm:p-5 ${cfg.bg} ${cfg.border} transition-all`}>
+                    <div className="flex gap-3">
+                      <Icon className={`h-5 w-5 shrink-0 mt-0.5 ${cfg.labelColor}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span className={`text-[10px] font-mono font-bold ${cfg.labelColor}`}>{cfg.label}</span>
+                          <Badge variant="outline" className="text-[10px] border-white/10 text-foreground/50">
+                            {alert.platform}
+                          </Badge>
+                          <span className="text-[10px] text-foreground/30 ml-auto">{alert.timeAgo}</span>
+                        </div>
+                        <h3 className="font-semibold text-sm mb-1">{alert.title}</h3>
+                        <p className="text-xs text-foreground/60 leading-relaxed">{alert.body}</p>
+                        <div className="flex gap-3 mt-3">
+                          {alert.actionable && (
+                            <button
+                              className={`text-xs font-medium transition-colors flex items-center gap-1 ${cfg.labelColor} hover:opacity-80`}
+                              onClick={() => setActiveModal(alert)}
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Take Action
+                            </button>
+                          )}
+                          <button
+                            className="text-xs text-foreground/30 hover:text-foreground/60 transition-colors"
+                            onClick={() => handleDismiss(alert.id)}
+                          >
+                            Dismiss
+                          </button>
+                        </div>
                       </div>
-                      <h3 className="font-semibold text-sm mb-1">{alert.title}</h3>
-                      <p className="text-xs text-foreground/60 leading-relaxed">{alert.body}</p>
-                      {alert.actionable && (
-                        <button className="mt-3 text-xs text-cyan-400 hover:text-cyan-300 font-medium transition-colors">
-                          Take Action →
-                        </button>
-                      )}
                     </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       </main>
     </div>

@@ -4,6 +4,40 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { fetchWeeklyInsights, type WeeklyInsights } from '@/lib/insights-api';
 import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { toast } from 'sonner';
+
+function downloadInsightsCSV(insights: WeeklyInsights) {
+  const rows: (string | number)[][] = [
+    ['IDEORA — WEEKLY INSIGHTS REPORT'],
+    [`Week of ${insights.weekOf}`],
+    [],
+    ['WHAT WORKED THIS WEEK'],
+    ['Title', 'Platform', 'Engagement %', 'Views'],
+    ...insights.whatWorked.map((i) => [i.title, i.platform, i.engagement, i.views]),
+    [],
+    ['ENGAGEMENT PATTERNS'],
+    ['Title', 'Metric', 'Change %', 'Trend'],
+    ...insights.engagementPatterns.map((p) => [p.title, p.metric, p.change, p.trend]),
+    [],
+    ['COMPETITOR HIGHLIGHTS'],
+    ['Name', 'Platform', 'Engagement %', 'Viewer Increase'],
+    ...insights.competitorHighlights.map((c) => [c.name, c.platform, c.engagement, c.viewerIncrease]),
+    [],
+    ['NEXT WEEK TRENDS'],
+    ['Position', 'Title', 'Platform', 'Confidence Score', 'Expected Engagement'],
+    ...insights.nextWeekTrends.map((t) => [t.position, t.title, t.platform, t.confidenceScore, t.expectedEngagement]),
+  ];
+  const csv = rows.map((r) => r.map(String).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `ideora-insights-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast.success('Report downloaded', { description: 'Weekly insights exported as CSV' });
+}
 
 export default function InsightsPage() {
   const [insights, setInsights] = useState<WeeklyInsights | null>(null);
@@ -36,7 +70,12 @@ export default function InsightsPage() {
               <h1 className="text-3xl font-bold">Weekly Insights</h1>
               {insights && <p className="mt-2 text-foreground/60">Week of {insights.weekOf}</p>}
             </div>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg">
+            <Button
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg gap-2"
+              onClick={() => insights && downloadInsightsCSV(insights)}
+              disabled={!insights}
+            >
+              <Download className="h-4 w-4" />
               Download Report
             </Button>
           </div>
@@ -203,7 +242,13 @@ export default function InsightsPage() {
                           </div>
                         </div>
 
-                        <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg h-fit">
+                        <Button
+                          className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg h-fit"
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${trend.title}\n\n${trend.description}\n\nPlatforms: ${trend.platform}\nConfidence: ${trend.confidenceScore}%`);
+                            toast.success('Template copied!', { description: trend.title });
+                          }}
+                        >
                           Use Template
                         </Button>
                       </div>
