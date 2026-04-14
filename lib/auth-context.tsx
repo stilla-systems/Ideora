@@ -21,11 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check for existing session
     const checkSession = async () => {
       try {
-        if (!supabase) {
-          setUser(null);
-          setIsLoading(false);
-          return;
-        }
         const { data: { user: currentUser } } = await supabase.auth.getUser();
         setUser(currentUser || null);
       } catch (error) {
@@ -38,12 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     checkSession();
 
-    // Listen for auth changes only if supabase is available
-    if (!supabase) {
-      setIsLoading(false);
-      return;
-    }
-
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user || null);
@@ -57,9 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const handleLogout = async () => {
     try {
-      if (supabase) {
-        await supabase.auth.signOut();
-      }
+      await supabase.auth.signOut();
       setUser(null);
     } catch (error) {
       console.log('[v0] Error logging out:', error);

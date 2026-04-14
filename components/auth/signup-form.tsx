@@ -2,9 +2,9 @@
 
 import React from "react"
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,10 +12,7 @@ import { signUp } from '@/lib/auth';
 
 export function SignUpForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,14 +20,6 @@ export function SignUpForm() {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    setMounted(true);
-    const plan = searchParams.get('plan');
-    if (plan) {
-      setSelectedPlan(plan.charAt(0).toUpperCase() + plan.slice(1));
-    }
-  }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -68,15 +57,6 @@ export function SignUpForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
-      {mounted && selectedPlan && (
-        <div className="rounded-lg bg-violet-500/10 border border-violet-500/20 p-3 text-sm text-foreground">
-          <p>
-            <span className="font-medium">Selected Plan:</span>{' '}
-            <span className="text-violet-400">{selectedPlan}</span>
-          </p>
-        </div>
-      )}
-
       <div className="space-y-2">
         <Label htmlFor="name">Full Name</Label>
         <Input
@@ -141,10 +121,8 @@ export function SignUpForm() {
 
       <Button
         type="submit"
-        className="w-full bg-gradient-to-r from-violet-600 to-cyan-600 hover:from-violet-700 hover:to-cyan-700 text-white font-semibold transition-all duration-300 disabled:opacity-50"
+        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
         disabled={loading}
-        aria-label={loading ? 'Creating your account' : 'Create account and start free trial'}
-        aria-busy={loading}
       >
         {loading ? 'Creating account...' : 'Create Account'}
       </Button>

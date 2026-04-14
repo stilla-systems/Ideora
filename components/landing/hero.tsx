@@ -1,111 +1,110 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 
 export function HeroSection() {
   return (
-    <section className="relative w-full flex flex-col items-center justify-center overflow-hidden px-4 sm:px-6 pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-20 min-h-screen md:min-h-auto">
-      {/* Premium video and gradient background */}
-      <div className="absolute inset-0 -z-10">
-        {/* Hero Video Background */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-        </video>
-
-        {/* Overlay gradient for better text readability */}
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, rgba(15, 15, 21, 0.85) 0%, rgba(26, 31, 53, 0.8) 50%, rgba(15, 15, 21, 0.85) 100%)',
-        }} />
-        
-        {/* Premium gradient orbs synchronized with video */}
-        <div className="absolute top-20 left-1/3 w-80 h-80 rounded-full bg-gradient-to-r from-violet-500/15 via-purple-500/8 to-transparent blur-3xl" />
-        <div className="absolute bottom-40 right-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-cyan-500/15 to-violet-500/8 blur-3xl" />
-        
-        {/* Elite accent glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30" />
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-20 md:py-0">
+      {/* Cosmic background with particles effect */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        {/* Gradient orbs */}
+        <div className="absolute left-1/4 top-20 h-96 w-96 rounded-full bg-gradient-to-r from-violet-500/20 via-pink-500/15 to-transparent blur-3xl" />
+        <div className="absolute right-1/4 bottom-20 h-96 w-96 rounded-full bg-gradient-to-r from-cyan-500/20 to-violet-500/15 blur-3xl" />
+        {/* Particle dots */}
+        <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(2px 2px at 20px 30px, rgba(167, 139, 250, 0.5), rgba(0, 0, 0, 0))', backgroundSize: '200px 200px'}} />
       </div>
 
-      <div className="relative z-10 w-full max-w-4xl mx-auto">
-        {/* Premium Logo Section */}
-        <div className="flex justify-center mb-8 sm:mb-10 md:mb-12">
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 rounded-2xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
-            <Image 
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/file_000000008ac871f59ede0f812917b6ce-8XEVvquPGbljY0q6kyKqAOz12XiklF.png"
-              alt="Ideora Logo"
-              width={120}
-              height={120}
-              priority
-              className="relative h-20 sm:h-24 md:h-32 w-auto transition-transform duration-500 group-hover:scale-110 drop-shadow-2xl"
-            />
-          </div>
-        </div>
-
-        {/* Subheading badge */}
-        <div className="flex justify-center mb-6 sm:mb-8">
+      <div className="grid max-w-6xl gap-12 lg:grid-cols-2 items-center">
+        {/* Left content */}
+        <div className="flex flex-col gap-8">
           <div 
-            className="inline-flex items-center gap-2 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-center"
+            className="inline-block rounded-full px-4 py-2 w-fit"
             style={{
-              background: 'rgba(167, 139, 250, 0.12)',
+              background: 'rgba(167, 139, 250, 0.15)',
               backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(167, 139, 250, 0.25)',
+              border: '1px solid rgba(167, 139, 250, 0.3)',
             }}
           >
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400 flex-shrink-0" />
-            <span className="text-xs font-medium text-violet-300 whitespace-nowrap">
-              AI Content Intelligence Platform
+            <span className="text-sm font-semibold text-violet-300">
+              Real-Time Growth Direction
             </span>
+          </div>
+
+          <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl leading-tight text-white">
+            Turn Ideas Into Impact.
+          </h1>
+
+          <p className="text-balance text-lg text-gray-300">
+            Content and live growth direction for creators who want clarity, structure, and growth.
+          </p>
+
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Link href="/auth/signup">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 hover:shadow-xl hover:shadow-violet-500/50 text-white px-8 font-semibold transition-all"
+              >
+                Start Free Trial
+              </Button>
+            </Link>
+            <Link href="#features">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="px-8 font-semibold"
+                style={{
+                  background: 'rgba(167, 139, 250, 0.15)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(167, 139, 250, 0.3)',
+                  color: '#f0f1f5',
+                }}
+              >
+                See How It Works →
+              </Button>
+            </Link>
           </div>
         </div>
 
-        {/* Main headline with premium gradient */}
-        <div className="relative mb-4 sm:mb-6">
-          {/* Elite glow effect behind headline */}
-          <div className="absolute -inset-8 sm:-inset-12 md:-inset-16 blur-3xl opacity-30 pointer-events-none"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(167, 139, 250, 0.3) 0%, rgba(6, 214, 255, 0.15) 40%, transparent 70%)',
-            }}
-          />
-          <h1 className="relative text-balance text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-center leading-tight px-0 sm:px-2 bg-gradient-to-r from-white via-violet-100 to-cyan-100 bg-clip-text text-transparent">
-            Turn Ideas Into Impact.
-          </h1>
-        </div>
-
-        {/* Subheadline */}
-        <p className="text-balance text-base sm:text-lg md:text-xl text-gray-300 text-center max-w-2xl mx-auto mb-8 sm:mb-10 md:mb-12 px-2 sm:px-0">
-          AI-powered content intelligence for creators who want clarity, structure, and predictable growth.
-        </p>
-
-        {/* Elite CTA Buttons with premium effects */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full">
-          <Link href="/auth/signup" className="w-full sm:w-auto group" aria-label="Start free trial">
-            <Button 
-              size="lg" 
-              className="relative w-full sm:w-auto bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 text-white hover:shadow-2xl px-6 sm:px-10 h-11 sm:h-13 font-semibold transition-all duration-300 text-sm sm:text-base disabled:opacity-50 group-hover:-translate-y-1 group-hover:shadow-violet-500/50 overflow-hidden"
-              aria-label="Sign up for free trial"
+        {/* Right - Lightbulb illustration */}
+        <div className="relative h-96 md:h-full flex items-center justify-center">
+          <div className="relative w-64 h-96 md:w-80 md:h-96">
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-violet-500/30 via-pink-500/20 to-transparent blur-3xl" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-t from-cyan-500/30 to-transparent blur-3xl" />
+            
+            {/* Lightbulb SVG */}
+            <svg 
+              className="w-full h-full drop-shadow-2xl"
+              viewBox="0 0 300 400" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <span className="relative z-10">Start Free Trial</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </Button>
-          </Link>
-          <Link href="#features" className="w-full sm:w-auto group" aria-label="Scroll to features">
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 hover:border-cyan-400 px-6 sm:px-10 h-11 sm:h-13 font-semibold transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1 group-hover:shadow-cyan-500/20 text-sm sm:text-base"
-              aria-label="Learn more about Ideora features"
-            >
-              <span className="hidden sm:inline">Explore the Intelligence Engine</span>
-              <span className="sm:hidden">Learn More</span>
-              <ArrowRight className="ml-2 w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1.5 transition-all duration-300 ease-out" aria-hidden="true" />
-            </Button>
-          </Link>
+              {/* Bulb with gradient layers */}
+              <defs>
+                <linearGradient id="bulbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style={{stopColor: '#c084fc', stopOpacity: 1}} />
+                  <stop offset="25%" style={{stopColor: '#ec4899', stopOpacity: 1}} />
+                  <stop offset="50%" style={{stopColor: '#f97316', stopOpacity: 1}} />
+                  <stop offset="75%" style={{stopColor: '#fbbf24', stopOpacity: 1}} />
+                  <stop offset="100%" style={{stopColor: '#06d6ff', stopOpacity: 1}} />
+                </linearGradient>
+              </defs>
+              
+              {/* Main bulb shape with flowing effect */}
+              <path d="M150 40 Q200 80 200 140 Q200 180 180 200 L120 200 Q100 180 100 140 Q100 80 150 40" fill="url(#bulbGradient)" opacity="0.9" />
+              <path d="M160 50 Q190 85 190 135 Q190 170 175 190 L125 190 Q110 170 110 135 Q110 85 160 50" fill="url(#bulbGradient)" opacity="0.6" />
+              <path d="M170 65 Q180 90 180 130 Q180 160 170 180 L130 180 Q120 160 120 130 Q120 90 170 65" fill="url(#bulbGradient)" opacity="0.3" />
+              
+              {/* Center glow */}
+              <circle cx="150" cy="120" r="15" fill="#ffffff" opacity="0.8" />
+              <circle cx="150" cy="120" r="20" fill="#fbbf24" opacity="0.4" />
+              
+              {/* Base */}
+              <rect x="130" y="200" width="40" height="15" fill="#1e293b" />
+              <rect x="125" y="215" width="50" height="12" fill="#0f172a" />
+              <circle cx="150" cy="230" r="22" fill="#1e293b" />
+              <circle cx="150" cy="230" r="18" fill="#0f172a" />
+            </svg>
+          </div>
         </div>
       </div>
     </section>

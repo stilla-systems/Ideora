@@ -58,52 +58,51 @@ export function Sidebar() {
 
   return (
     <aside 
-      className="border-r h-screen w-48 sm:w-56 md:w-64 flex flex-col p-4 sm:p-6 sticky top-0 border-violet-500/30 transition-all duration-300 overflow-y-auto"
+      className="border-r h-screen w-64 flex flex-col p-6 sticky top-0 border-violet-500/30 transition-all duration-300"
       style={{
         background: 'linear-gradient(135deg, rgba(15, 15, 21, 0.95) 0%, rgba(26, 31, 53, 0.9) 100%)',
         backdropFilter: 'blur(12px)',
         borderColor: 'rgba(167, 139, 250, 0.2)',
       }}
     >
-      <Link href="/" className="mb-6 sm:mb-8 flex items-center gap-2 sm:gap-3 group">
+      <Link href="/" className="mb-8 flex items-center gap-3 group">
         <Image 
           src="/ideora-icon.png" 
           alt="Ideora" 
           width={32}
           height={32}
-          className="h-7 sm:h-8 w-7 sm:w-8 group-hover:scale-110 transition-transform flex-shrink-0" 
+          className="h-8 w-8 group-hover:scale-110 transition-transform" 
         />
-        <span className="hidden sm:inline text-base sm:text-lg font-bold text-white">Ideora</span>
+        <span className="text-lg font-bold text-white">Ideora</span>
       </Link>
 
-      <nav className="flex-1 space-y-1 sm:space-y-2">
+      <nav className="flex-1 space-y-2">
         {menuItems.map((item) => (
-          <Link key={item.href} href={item.href} title={item.label} className="block">
+          <Link key={item.href} href={item.href}>
             <Button
               variant={pathname === item.href ? 'default' : 'ghost'}
-              className={`w-full justify-center sm:justify-start gap-2 sm:gap-3 font-medium transition-all text-xs sm:text-sm h-9 sm:h-10 ${
+              className={`w-full justify-start gap-3 font-medium transition-all ${
                 pathname === item.href
                   ? 'bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 text-white shadow-lg shadow-violet-500/20'
                   : 'text-foreground/70 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5'
               }`}
             >
               <span className="text-lg">{item.icon}</span>
-              <span className="hidden sm:inline">{item.label}</span>
+              {item.label}
             </Button>
           </Link>
         ))}
       </nav>
 
-      <div className="flex flex-col gap-1 sm:gap-2 mt-auto pt-4 sm:pt-6 border-t border-foreground/10">
+      <div className="flex flex-col gap-2 mt-auto pt-6 border-t border-foreground/10">
         <ThemeToggleButton />
         <Button
           variant="ghost"
-          className="w-full justify-center sm:justify-start gap-2 sm:gap-3 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs sm:text-sm h-9 sm:h-10"
+          className="w-full justify-start gap-3 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
           onClick={handleLogout}
-          title="Sign Out"
         >
           <span className="text-lg">🚪</span>
-          <span className="hidden sm:inline">Sign Out</span>
+          Sign Out
         </Button>
       </div>
     </aside>
