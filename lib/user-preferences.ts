@@ -7,7 +7,7 @@ export interface UserPreferences {
   emailNotifications: boolean;
 }
 
-const STORAGE_KEY = 'stillatrends_preferences';
+const STORAGE_KEY = 'ideora_preferences';
 
 export function getUserPreferences(userId: string): UserPreferences {
   if (typeof window === 'undefined') {

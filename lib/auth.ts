@@ -46,8 +46,8 @@ export async function signUp(
   mockUsers[userId] = { email, password, name };
   const user: User = { id: userId, email, name };
   if (typeof window !== 'undefined') {
-    sessionStorage.setItem('stillatrends_user', JSON.stringify(user));
-    sessionStorage.setItem('stillatrends_session', JSON.stringify(user));
+    sessionStorage.setItem('ideora_user', JSON.stringify(user));
+    sessionStorage.setItem('ideora_session', JSON.stringify(user));
   }
   return { user, error: null };
 }
@@ -89,8 +89,8 @@ export async function logIn(
   }
   const user: User = { id: userId, email, name: userData.name };
   if (typeof window !== 'undefined') {
-    sessionStorage.setItem('stillatrends_user', JSON.stringify(user));
-    sessionStorage.setItem('stillatrends_session', JSON.stringify(user));
+    sessionStorage.setItem('ideora_user', JSON.stringify(user));
+    sessionStorage.setItem('ideora_session', JSON.stringify(user));
   }
   return { user, error: null };
 }
@@ -100,15 +100,15 @@ export async function logOut(): Promise<void> {
     await supabase.auth.signOut();
   }
   if (typeof window !== 'undefined') {
-    sessionStorage.removeItem('stillatrends_user');
-    sessionStorage.removeItem('stillatrends_session');
+    sessionStorage.removeItem('ideora_user');
+    sessionStorage.removeItem('ideora_session');
   }
 }
 
 export function getCurrentUser(): User | null {
   if (typeof window === 'undefined') return null;
   try {
-    const userStr = sessionStorage.getItem('stillatrends_user');
+    const userStr = sessionStorage.getItem('ideora_user');
     return userStr ? JSON.parse(userStr) : null;
   } catch {
     return null;

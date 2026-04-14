@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!supabase) {
           // Fallback: check sessionStorage for mock auth user
           if (typeof window !== 'undefined') {
-            const storedUser = sessionStorage.getItem('stillatrends_user');
+            const storedUser = sessionStorage.getItem('ideora_user');
             if (storedUser) {
               const parsed = JSON.parse(storedUser);
               setUser({ id: parsed.id, email: parsed.email, name: parsed.name || parsed.email });
@@ -95,8 +95,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (supabase) {
         await supabase.auth.signOut();
       } else if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('stillatrends_user');
-        sessionStorage.removeItem('stillatrends_session');
+        sessionStorage.removeItem('ideora_user');
+        sessionStorage.removeItem('ideora_session');
       }
       setUser(null);
     } catch (error) {
