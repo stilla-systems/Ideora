@@ -10,7 +10,7 @@ export function HeroSection() {
         className="absolute inset-0 w-full h-full object-cover"
         style={{ filter: 'brightness(1.05) contrast(1.02)' }}
       >
-        <source src="/hero-video.mp4" type="video/mp4" />
+        <source src="/video/hero-video.mp4" type="video/mp4" />
       </video>
     </section>
   );
