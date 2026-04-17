@@ -5,13 +5,13 @@ import { GrowthCommandCenter } from '@/components/dashboard/growth-command-cente
 
 export default function DashboardPage() {
   return (
-    <div className="flex h-screen bg-slate-950 overflow-hidden">
-      {/* Left Sidebar Navigation */}
+    <div className="flex h-screen overflow-hidden" style={{ background: '#0A0E27' }}>
+      {/* Sidebar */}
       <CommandCenterSidebar />
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-auto">
-        <div className="p-8">
+      {/* Main content */}
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full overflow-auto px-6 py-8">
           <GrowthCommandCenter />
         </div>
       </main>
