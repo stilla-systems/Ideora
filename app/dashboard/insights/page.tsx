@@ -1,220 +1,254 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Sidebar } from '@/components/dashboard/sidebar';
+import { DashboardShell } from '@/components/dashboard/dashboard-shell';
 import { fetchWeeklyInsights, type WeeklyInsights } from '@/lib/insights-api';
 import { Button } from '@/components/ui/button';
+import { TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
+
+const CARD_STYLE = {
+  background: 'rgba(255,255,255,0.015)',
+  backdropFilter: 'blur(10px)',
+} as const;
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 mb-5">
+      <h2 className="text-lg font-bold text-white">{children}</h2>
+      <div className="flex-1 h-px bg-white/[0.04]" />
+    </div>
+  );
+}
 
 export default function InsightsPage() {
   const [insights, setInsights] = useState<WeeklyInsights | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadInsights = async () => {
-      try {
-        const data = await fetchWeeklyInsights();
-        setInsights(data);
-      } catch (error) {
-        console.error('Failed to load insights:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadInsights();
+    fetchWeeklyInsights()
+      .then(setInsights)
+      .catch((e) => console.error('Failed to load insights:', e))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar />
-
-      <main className="flex-1 overflow-auto">
-        <div className="px-8 py-6 space-y-8">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">Weekly Insights</h1>
-              {insights && <p className="mt-2 text-foreground/60">Week of {insights.weekOf}</p>}
+    <DashboardShell>
+      <div className="px-4 md:px-6 py-6 md:py-8 space-y-10 max-w-7xl">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              <span className="text-xs font-mono text-gray-500 tracking-widest">WEEKLY REPORT</span>
             </div>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg">
-              Download Report
-            </Button>
+            <h1 className="text-2xl font-bold text-white">Weekly Insights</h1>
+            {insights && (
+              <p className="text-sm text-gray-500 mt-1">Week of {insights.weekOf}</p>
+            )}
           </div>
+          <Button
+            size="sm"
+            className="flex-shrink-0 font-mono text-xs h-8 gap-2"
+            style={{
+              background: 'rgba(0,217,255,0.08)',
+              color: '#00D9FF',
+              border: '1px solid rgba(0,217,255,0.2)',
+            }}
+          >
+            <Download className="w-3.5 h-3.5" />
+            Export
+          </Button>
+        </div>
 
-          {loading ? (
-            <div className="flex h-96 items-center justify-center">
-              <div className="space-y-4 text-center">
-                <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600" />
-                <p className="text-foreground/60">Loading weekly insights...</p>
-              </div>
+        {loading ? (
+          <div className="flex h-64 items-center justify-center">
+            <div className="text-center space-y-3">
+              <div className="w-8 h-8 border-2 border-cyan-400/20 border-t-cyan-400 rounded-full animate-spin mx-auto" />
+              <p className="text-xs font-mono text-gray-600">Loading intelligence...</p>
             </div>
-          ) : insights ? (
-            <>
-              {/* What Worked Section */}
-              <section>
-                <h2 className="mb-4 text-2xl font-bold">What Worked This Week</h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {insights.whatWorked.map((item) => (
-                    <div
-                      key={item.id}
-                      className="p-6 rounded-2xl border border-white/30 dark:border-white/10 transition-all duration-300 hover:shadow-lg"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.7)',
-                        backdropFilter: 'blur(10px) saturate(200%)',
-                      }}
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="text-4xl">{item.icon}</div>
-                        <span className="px-3 py-1 rounded-full text-xs font-semibold text-indigo-700 dark:text-indigo-400 bg-indigo-100/50 dark:bg-indigo-900/30">
-                          {item.platform}
-                        </span>
+          </div>
+        ) : insights ? (
+          <>
+            {/* What Worked */}
+            <section>
+              <SectionLabel>What Worked This Week</SectionLabel>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {insights.whatWorked.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-5 rounded-xl border border-white/[0.06] hover:border-white/[0.1] transition-all duration-200"
+                    style={CARD_STYLE}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <span className="text-3xl">{item.icon}</span>
+                      <span className="text-xs font-mono px-2 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                        {item.platform}
+                      </span>
+                    </div>
+                    <h3 className="text-sm font-bold text-white mb-1.5">{item.title}</h3>
+                    <p className="text-xs text-gray-400 leading-relaxed mb-4">{item.description}</p>
+                    <div className="flex items-center justify-between pt-3 border-t border-white/[0.05]">
+                      <div>
+                        <p className="text-xs font-mono text-gray-600 mb-0.5">ENGAGEMENT</p>
+                        <p className="text-base font-bold text-emerald-400">{item.engagement}%</p>
                       </div>
-                      <h3 className="text-lg font-bold mb-2">{item.title}</h3>
-                      <p className="text-foreground/70 text-sm mb-4">{item.description}</p>
-                      <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                        <div>
-                          <p className="text-xs text-foreground/60">Engagement</p>
-                          <p className="text-lg font-bold text-green-600 dark:text-green-400">{item.engagement}%</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-foreground/60">Views</p>
-                          <p className="text-lg font-bold">{(item.views / 1000).toFixed(0)}K</p>
-                        </div>
+                      <div className="text-right">
+                        <p className="text-xs font-mono text-gray-600 mb-0.5">VIEWS</p>
+                        <p className="text-base font-bold text-white">{(item.views / 1000).toFixed(0)}K</p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </section>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-              {/* Engagement Patterns Section */}
-              <section>
-                <h2 className="mb-4 text-2xl font-bold">Top Engagement Patterns</h2>
-                <div className="grid gap-6 md:grid-cols-3">
-                  {insights.engagementPatterns.map((pattern) => (
-                    <div
-                      key={pattern.id}
-                      className="p-6 rounded-2xl border border-white/30 dark:border-white/10"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.7)',
-                        backdropFilter: 'blur(10px) saturate(200%)',
-                      }}
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="text-3xl">{pattern.icon}</div>
-                        <div
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            pattern.trend === 'up'
-                              ? 'text-green-700 dark:text-green-400 bg-green-100/50 dark:bg-green-900/30'
-                              : 'text-blue-700 dark:text-blue-400 bg-blue-100/50 dark:bg-blue-900/30'
-                          }`}
-                        >
-                          {pattern.trend === 'up' ? '↑' : '→'} {pattern.change}%
-                        </div>
+            {/* Engagement Patterns */}
+            <section>
+              <SectionLabel>Engagement Patterns</SectionLabel>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {insights.engagementPatterns.map((pattern) => (
+                  <div
+                    key={pattern.id}
+                    className="p-5 rounded-xl border border-white/[0.06] hover:border-white/[0.1] transition-all duration-200"
+                    style={CARD_STYLE}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-2xl">{pattern.icon}</span>
+                      <div
+                        className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-mono font-bold ${
+                          pattern.trend === 'up'
+                            ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                            : 'bg-blue-500/10 border border-blue-500/20 text-blue-400'
+                        }`}
+                      >
+                        {pattern.trend === 'up' ? (
+                          <TrendingUp className="w-3 h-3" />
+                        ) : pattern.trend === 'down' ? (
+                          <TrendingDown className="w-3 h-3" />
+                        ) : (
+                          <Minus className="w-3 h-3" />
+                        )}
+                        {pattern.change}%
                       </div>
-                      <h3 className="text-lg font-bold mb-2">{pattern.title}</h3>
-                      <p className="text-foreground/70 text-sm mb-3">{pattern.description}</p>
-                      <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">{pattern.metric}</p>
                     </div>
-                  ))}
-                </div>
-              </section>
+                    <h3 className="text-sm font-bold text-white mb-1.5">{pattern.title}</h3>
+                    <p className="text-xs text-gray-400 leading-relaxed mb-3">{pattern.description}</p>
+                    <p className="text-xs font-mono text-cyan-400">{pattern.metric}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-              {/* Competitor Highlights Section */}
-              <section>
-                <h2 className="mb-4 text-2xl font-bold">Competitor Highlights</h2>
-                <div className="grid gap-6">
-                  {insights.competitorHighlights.map((competitor) => (
-                    <div
-                      key={competitor.id}
-                      className="p-6 rounded-2xl border border-white/30 dark:border-white/10"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.7)',
-                        backdropFilter: 'blur(10px) saturate(200%)',
-                      }}
-                    >
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between md:gap-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <h3 className="text-lg font-bold">{competitor.name}</h3>
-                            <span className="px-3 py-1 rounded-full text-xs font-semibold text-cyan-700 dark:text-cyan-400 bg-cyan-100/50 dark:bg-cyan-900/30">
-                              {competitor.platform}
-                            </span>
-                          </div>
-                          <p className="text-foreground/70 mb-3">{competitor.strategy}</p>
-                          <p className="text-sm text-foreground/60">
-                            <span className="font-semibold">Top Content:</span> {competitor.topContent}
+            {/* Competitor Highlights */}
+            <section>
+              <SectionLabel>Competitor Highlights</SectionLabel>
+              <div className="space-y-3">
+                {insights.competitorHighlights.map((competitor) => (
+                  <div
+                    key={competitor.id}
+                    className="p-5 rounded-xl border border-white/[0.06] hover:border-white/[0.1] transition-all duration-200"
+                    style={CARD_STYLE}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-sm font-bold text-white">{competitor.name}</h3>
+                          <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+                            {competitor.platform}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400 leading-relaxed mb-2">{competitor.strategy}</p>
+                        <p className="text-xs text-gray-600">
+                          <span className="text-gray-500 font-medium">Top content:</span>{' '}
+                          {competitor.topContent}
+                        </p>
+                      </div>
+                      <div className="flex sm:flex-col gap-6 sm:gap-3 sm:text-right flex-shrink-0">
+                        <div>
+                          <p className="text-xs font-mono text-gray-600 mb-0.5">ENGAGEMENT</p>
+                          <p className="text-xl font-bold text-cyan-400">{competitor.engagement}%</p>
+                        </div>
+                        <div>
+                          <p className="text-xs font-mono text-gray-600 mb-0.5">GROWTH</p>
+                          <p className="text-xl font-bold text-emerald-400">
+                            +{(competitor.viewerIncrease / 1000).toFixed(1)}K
                           </p>
                         </div>
-                        <div className="flex gap-6 mt-4 md:mt-0 md:flex-col md:text-right">
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Next Week Trends */}
+            <section className="pb-8">
+              <SectionLabel>Next Week's Top Recommendations</SectionLabel>
+              <div className="space-y-3">
+                {insights.nextWeekTrends.map((trend) => (
+                  <div
+                    key={trend.id}
+                    className="p-5 rounded-xl border border-white/[0.06] hover:border-cyan-500/20 transition-all duration-200"
+                    style={CARD_STYLE}
+                  >
+                    <div className="flex flex-col sm:flex-row gap-5">
+                      <div className="flex items-center gap-4 flex-shrink-0">
+                        <div
+                          className="flex h-14 w-14 items-center justify-center rounded-xl border border-white/[0.08]"
+                          style={{ background: 'rgba(0,217,255,0.06)' }}
+                        >
+                          <span className="text-2xl">{trend.icon}</span>
+                        </div>
+                        <div
+                          className="px-3 py-1.5 rounded-lg text-xs font-mono font-bold text-white"
+                          style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}
+                        >
+                          #{trend.position}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-white mb-1.5">{trend.title}</h3>
+                        <p className="text-xs text-gray-400 leading-relaxed mb-3">{trend.description}</p>
+                        <div className="flex flex-wrap gap-4">
                           <div>
-                            <p className="text-xs text-foreground/60 mb-1">Engagement Rate</p>
-                            <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{competitor.engagement}%</p>
+                            <p className="text-xs font-mono text-gray-600 mb-0.5">PLATFORM</p>
+                            <p className="text-xs font-semibold text-gray-300">{trend.platform}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-foreground/60 mb-1">Growth This Week</p>
-                            <p className="text-2xl font-bold text-green-600 dark:text-green-400">+{(competitor.viewerIncrease / 1000).toFixed(1)}K</p>
+                            <p className="text-xs font-mono text-gray-600 mb-0.5">CONFIDENCE</p>
+                            <p className="text-xs font-bold text-cyan-400">{trend.confidenceScore}%</p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-mono text-gray-600 mb-0.5">EXP. ENGAGEMENT</p>
+                            <p className="text-xs font-bold text-emerald-400">{trend.expectedEngagement}</p>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              {/* Next Week Trends Section */}
-              <section className="pb-8">
-                <h2 className="mb-4 text-2xl font-bold">Next Week's Top 3 Recommended Trends</h2>
-                <div className="space-y-4">
-                  {insights.nextWeekTrends.map((trend) => (
-                    <div
-                      key={trend.id}
-                      className="p-6 rounded-2xl border border-white/30 dark:border-white/10 hover:border-indigo-400/50 transition-all duration-300"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.7)',
-                        backdropFilter: 'blur(10px) saturate(200%)',
-                      }}
-                    >
-                      <div className="flex flex-col md:flex-row gap-6">
-                        <div className="flex items-center gap-4">
-                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-indigo-300/30">
-                            <span className="text-3xl">{trend.icon}</span>
-                          </div>
-                          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg px-4 py-2">
-                            <p className="text-sm font-semibold text-white"># {trend.position}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold mb-2">{trend.title}</h3>
-                          <p className="text-foreground/70 mb-4">{trend.description}</p>
-                          <div className="flex flex-wrap gap-4">
-                            <div>
-                              <p className="text-xs text-foreground/60 mb-1">Platforms</p>
-                              <p className="font-semibold text-sm">{trend.platform}</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-foreground/60 mb-1">Confidence Score</p>
-                              <p className="font-semibold text-sm text-indigo-600 dark:text-indigo-400">{trend.confidenceScore}%</p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-foreground/60 mb-1">Expected Engagement</p>
-                              <p className="font-semibold text-sm text-green-600 dark:text-green-400">{trend.expectedEngagement}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg h-fit">
+                      <div className="flex-shrink-0 self-center">
+                        <Button
+                          size="sm"
+                          className="text-xs font-mono h-8"
+                          style={{
+                            background: 'rgba(0,217,255,0.08)',
+                            color: '#00D9FF',
+                            border: '1px solid rgba(0,217,255,0.2)',
+                          }}
+                        >
                           Use Template
                         </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </section>
-            </>
-          ) : null}
-        </div>
-      </main>
-    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        ) : (
+          <div className="flex h-64 items-center justify-center">
+            <p className="text-sm text-gray-600 font-mono">No insights available</p>
+          </div>
+        )}
+      </div>
+    </DashboardShell>
   );
 }

@@ -37,9 +37,9 @@ export function Header() {
             {/* Logo glow effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-violet-600 via-pink-500 to-cyan-500 rounded-xl blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-500" />
             {/* Icon Logo */}
-            <Image 
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/file_000000008ac871f59ede0f812917b6ce-8XEVvquPGbljY0q6kyKqAOz12XiklF.png"
-              alt="Ideora" 
+            <Image
+              src="/ideora-logo.png"
+              alt="Ideora"
               width={40}
               height={40}
               priority

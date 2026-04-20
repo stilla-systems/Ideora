@@ -311,7 +311,7 @@ export function GrowthCommandCenter() {
   return (
     <div className="flex gap-6 h-full">
       {/* ── Main scroll area ── */}
-      <div className="flex-1 min-w-0 space-y-8 overflow-auto">
+      <div className="flex-1 min-w-0 space-y-8">
         {/* Greeting header */}
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -378,8 +378,8 @@ export function GrowthCommandCenter() {
         </div>
       </div>
 
-      {/* ── Right rail ── */}
-      <div className="w-72 flex-shrink-0 space-y-4 overflow-auto">
+      {/* ── Right rail — hidden on mobile, visible lg+ ── */}
+      <div className="hidden lg:flex w-72 flex-shrink-0 flex-col space-y-4">
         <PostingReminder />
         <LiveSignals />
         <Watchlist />
